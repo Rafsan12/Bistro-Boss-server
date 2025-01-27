@@ -41,7 +41,7 @@ async function run() {
 
     // middlewares
     const verifyToken = (req, res, next) => {
-      console.log("inside", req.headers.authorization);
+      // console.log("inside", req.headers.authorization);
       if (!req.headers.authorization) {
         return res.status(401).send({ message: "Unauthorized Access" });
       }
@@ -97,7 +97,7 @@ async function run() {
 
     //  user related Api
     app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
-      console.log(req.headers);
+      // console.log(req.headers);
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -122,6 +122,12 @@ async function run() {
     // menu related APi
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
+      const item = req.body;
+      const result = await menuCollection.insertOne(item);
       res.send(result);
     });
 
