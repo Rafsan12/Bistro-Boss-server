@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const menuCollection = client.db("BistroDB").collection("menu");
     const reviewsCollection = client.db("BistroDB").collection("reviews");
@@ -131,6 +131,18 @@ async function run() {
       res.send(result);
     });
 
+    app.delete("/menu/:id", verifyToken, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      console.log("Delete Request for ID:", id);
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).send({ message: "Invalid ID format" });
+      }
+      const query = { _id: new ObjectId(id) };
+      const result = await menuCollection.deleteOne(query);
+      console.log("Delete Result:", result);
+      res.send(result);
+    });
+
     // review related Api
     app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
@@ -157,10 +169,10 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
